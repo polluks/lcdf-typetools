@@ -82,17 +82,21 @@ class Data {
     static inline int32_t s32(const unsigned char* s);
     static inline int32_t s32_aligned16(const unsigned char* s);
     static inline int32_t s32_aligned(const unsigned char* s);
+    static inline double fixed_aligned16(const unsigned char* s);
+    static inline double fixed_aligned(const unsigned char* s);
 
     inline uint8_t operator[](unsigned offset) const;
     inline uint16_t u16(unsigned offset) const;
     inline int16_t s16(unsigned offset) const;
     inline uint32_t u32(unsigned offset) const;
     inline int32_t s32(unsigned offset) const;
+    inline double fixed(unsigned offset) const;
     inline uint8_t operator[](int offset) const;
     inline uint16_t u16(int offset) const;
     inline int16_t s16(int offset) const;
     inline uint32_t u32(int offset) const;
     inline int32_t s32(int offset) const;
+    inline double fixed(int offset) const;
 
     Data subtable(unsigned offset) const;
     Data offset_subtable(unsigned offset_offset) const;
@@ -159,6 +163,14 @@ inline int32_t Data::s32_aligned(const unsigned char* s) {
     return ntohl(*reinterpret_cast<const int32_t*>(s));
 }
 
+inline double Data::fixed_aligned16(const unsigned char* s) {
+    return s32_aligned16(s) / 65536.;
+}
+
+inline double Data::fixed_aligned(const unsigned char* s) {
+    return s32_aligned(s) / 65536.;
+}
+
 inline uint16_t Data::u16(unsigned offset) const {
     if (offset + 1 >= static_cast<unsigned>(_str.length()) || offset + 1 == 0)
         throw Bounds();
@@ -187,6 +199,13 @@ inline int32_t Data::s32(unsigned offset) const {
         return s32_aligned16(_str.udata() + offset);
 }
 
+inline double Data::fixed(unsigned offset) const {
+    if (offset + 3 >= static_cast<unsigned>(_str.length()) || offset + 3 < 3)
+        throw Bounds();
+    else
+        return fixed_aligned16(_str.udata() + offset);
+}
+
 inline uint8_t Data::operator[](int offset) const {
     return (*this)[unsigned(offset)];
 }
@@ -205,6 +224,10 @@ inline uint32_t Data::u32(int offset) const {
 
 inline int32_t Data::s32(int offset) const {
     return s32(unsigned(offset));
+}
+
+inline double Data::fixed(int offset) const {
+    return fixed(unsigned(offset));
 }
 
 inline Data Data::substring(int left, int len) const noexcept {

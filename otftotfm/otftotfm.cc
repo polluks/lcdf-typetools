@@ -566,7 +566,7 @@ String Printer::render(double value) const {
         return String(value);
     else {
         char buf[128];
-        sprintf(buf, "%.4f", value);
+        snprintf(buf, sizeof(buf), "%.4f", value);
         return String(buf);
     }
 }
@@ -2266,7 +2266,7 @@ main(int argc, char *argv[])
 
           case VERSION_OPT:
             printf("otftotfm (LCDF typetools) %s\n", VERSION);
-            printf("Copyright (C) 2002-2019 Eddie Kohler\n\
+            printf("Copyright (C) 2002-2023 Eddie Kohler\n\
 This is free software; see the source for copying conditions.\n\
 There is NO warranty, not even for merchantability or fitness for a\n\
 particular purpose.\n");
